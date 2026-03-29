@@ -1,35 +1,28 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/jYmqdKSO)
-# 📌 Autoencoder with MNIST Dataset
+# Autoencoder Image Retrieval - MNIST
 
-This project demonstrates how to build, train, and use an **autoencoder** for the **MNIST handwritten digit dataset**. It includes visualization of digits, dimensionality reduction, and an image retrieval based on **cosine similarity**.
+## Overview
+A simple image retrieval system using an autoencoder trained on the MNIST dataset (70,000 handwritten digit images). Given a query image, the system returns the top 5 most similar images from the training set.
 
----
+## How It Works
+1. **Load & preprocess** MNIST data (normalize pixels to 0-1, split into 60k train / 10k test)
+2. **Build an autoencoder** with encoder (784 → 256 → bottleneck) and decoder (bottleneck → 256 → 784)
+3. **Train** the autoencoder to reconstruct input images using binary crossentropy loss and Adam optimizer
+4. **Encode** all training images using the encoder only to get compressed representations
+5. **Retrieve** similar images by computing cosine similarity between a query image and all encoded training images
 
-## 🚀 Project Overview
+## Bottleneck Size Comparison
 
-1. **Data Loading**:
+I experimented with three different bottleneck sizes to see how compression level affects performance:
 
-   * The MNIST dataset (`mnist_784`) is fetched using `fetch_openml`.
-   * It contains 70,000 grayscale images of handwritten digits (0–9).
-   * Each image is represented as a **28×28** pixel grid (flattened to 784 features).
+| Metric | 16 | 32 | 64 |
+|---|---|---|---|
+| Final Train Loss | ~0.092 | ~0.084 | ~0.073 |
+| t-SNE Clusters | Clear with some overlap | Clear and well-separated | Clear but more overlap |
+| Retrieval | Works correctly | Works correctly | Works correctly |
 
-2. **Autoencoder Architecture**:
+**Key takeaways:**
+- Larger bottleneck = lower loss (better reconstruction) but the model doesn't need to separate digits as strongly
+- Smaller bottleneck = higher loss but forces the encoder to learn the most important features
+- 32 is a good balance between reconstruction quality and meaningful compression
 
-   * **Encoder**: Compresses 784-dimensional input into an n-dimensional latent representation.
-   * **Decoder**: Reconstructs the original 784-dimensional image from the latent space.
-   * **Loss Function**
-   * **Optimizer**
-
-3. **Training**:
-
-   * The autoencoder is trained to reconstruct the input images.
-
-4. **Dimensionality Reduction & Visualization**:
-
-   * Encoded representations of test images are further reduced to 2D.
-
-5. **Image Retrieval**:
-
-   * A sample image is encoded into the latent space using the encoder only.
-   * Cosine similarity is used to compare it against the training set.
-   * The top-5 most similar images are retrieved and displayed.
